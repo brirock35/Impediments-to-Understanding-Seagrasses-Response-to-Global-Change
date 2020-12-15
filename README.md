@@ -72,7 +72,7 @@ add.color.bar(cols = COLOUR, lims=c(1,22), digits=1, prompt=TRUE,title = NA,
 
 # See below for resulting plot:
 ```
-![seagrass SR](https://raw.githubusercontent.com/brirock35/Rock-Grad-Project/master/species%20richness.png)
+![SR](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%203b.tiff)
 
 ## 2. Temporal increase in sampling
 ## 3. Temporal sampling trends 
