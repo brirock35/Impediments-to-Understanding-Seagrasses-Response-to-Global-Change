@@ -136,7 +136,7 @@ x <- over(d, w)
 y <- cbind(as.data.table(d), x)
 y <- y[complete.cases(y),]
 ```
-We next identify month names as its own variable, then create a data frame that assigns a number to each day of the month in a given year, and finally create variables for the Julian day data and years within the data.
+We next identify months as a variable, then create a data frame that accumulates the total number of days per month and assigns a number to each day within in a given year, then finally create variables for the Julian day and year.
 ```
 months <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
             "Jul", "Aug", "Sep", "Oct","Nov", "Dec")
@@ -144,7 +144,7 @@ mos <- data.frame(month = fct_inorder(months), day=(cumsum(c(0, 31, 28, 31, 30, 
 Julian_Day <- y$julian
 Year <- y$year
 ```
-Finally, we plot the point records across time based off of the year and Julian day of year assigned to that point record, and save the resulting plot as a PNG.
+Lastly, we plot the point records across time based off of the year and Julian day of year assigned to that point record, and save the resulting plot as a PNG.
 ```
 p <- ggplot() +
   geom_point(data=y, aes(Julian_Day, Year, color=year), size=1) +
@@ -165,6 +165,85 @@ dev.off()
 
 ## 3. Temporal sampling trends 
 ## 4. Taxonomic sampling trends
+This analysis sets out to determine the presence of a phylogenetic signal in the sampling of seagrasses. First, we read in the needed packages.
+```
+library(ape) 
+library(data.table) 
+library(phyloregion) 
+library(picante) 
+library(phytools)
+library(phylobase) 
+library(adephylo) 
+library(ggtree)
+```
+Then, we read in the downloaded seagrass occurrence data from GBIF as well as a dataset of seagrass phylogeny. These are then subjected to data manipulation, and phylogenetic data is matched with the point records in an attempt to track phylogenetic signal in species sampling.
+```
+d <- fread("/Users/darulab/Desktop/BriannaR/Review/Data/SeagrassGBIF/GBIF Seagrasses/seagrass occurrances jan_17 2020.csv", stringsAsFactors = FALSE)
+viewd <- d[, c("genus", "species")]
+d$species <- gsub(" ", "_", d$species)
+tree <- read.nexus("/Users/darulab/Desktop/BriannaR/Review/Data/phylogeny/FINAL_tree.tre")
+tree <- phylobuilder(d$species, tree = tree)
+s <- data.frame(table(d$species))
+z <- as.data.frame(s)
+rownames(z) <- z[,1]
+z[,1] <- NULL
+index <- intersect(tree$tip.label, rownames(z))
+tr1 <- keep.tip(tree, index)
+M <- subset(z, rownames(z) %in% index)
+subphy <- match.phylo.data(tree, M)$phy
+subdat <- match.phylo.data(tree, M)$data
+names(subdat)[1] <- "x"
+subdat$x <- log(subdat$x+1)
+```
+Next, we visualize the matched data by plotting.
+```
+p <- ggtree(subphy, lwd=0.13, layout="fan", open.angle=180) + 
+  geom_tiplab(aes(label=label, angle=angle), size=2, align=TRUE, linesize=.025, offset=100) + 
+  theme_tree2()
+pp <- (p + scale_y_continuous(expand=c(0, 0.93))) %>%
+  gheatmap(subdat, offset=3, width=0.5, colnames=TRUE, colnames_angle=-45, hjust=-0.5, low="#F6FBF4", high="#004616", color = "grey", font.size=2) %>%
+  scale_x_ggtree()
+pp + theme(legend.position="right")
+vp2 <- open_tree(pp, 180
+
+# See below for resulting plot: 
+```
+![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%206.png)
+
+Within this analysis, we also performed statistcal analyses (i.e., Moran's I, Abouheif's Cmean, Pagel's λ, and Blomberg's K) to test for a signifcant phylogenetic signal in the point records.
+```
+# 1. Moran's I
+# First, you need one file that combines both the phylogenetic and trait data
+phylotraits <- phylo4d(subphy, subdat)
+# Then, we do moran test using some Monte Carlo simulations (default is 999 randomizations)
+moran.test <- abouheif.moran(phylotraits, method="Abouheif")
+plot(moran.test)
+
+
+# 2. Abouheif's Cmean
+# First, you need one file that combines both the phylogenetic and trait data
+phylotraits <- phylo4d(subphy, subdat)
+abouheif.test <- abouheif.moran(phylotraits,method="oriAbouheif")
+abouheif.test
+plot(abouheif.test)
+
+
+# 3. Pagel's λ
+# First, you need to define which trait you want to test and give names to each value according to species
+trait<-subdat[,1]
+names(trait)<-rownames(subdat)
+phylosig(subphy, trait, method="lambda", test=TRUE, nsim=999)
+
+
+# 4. Blomberg's K
+# First, you need to define which trait you want to test and give names to each value according to species
+trait<-subdat[,1]
+names(trait)<-rownames(subdat)
+#Then, we do the test with 999 randomizations:
+phylosig(subphy, trait, method="K", test=TRUE, nsim=999)
+```
+
+
 ## 5. Family rank correlations
 ## 6. Extinction risk
 ## 7. Quantifying increase of sampling
