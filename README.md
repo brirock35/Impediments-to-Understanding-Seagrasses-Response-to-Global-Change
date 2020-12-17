@@ -210,7 +210,7 @@ vp2 <- open_tree(pp, 180
 ```
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%206.png)
 
-Within this analysis, we also performed statistcal analyses (i.e., Moran's I, Abouheif's Cmean, Pagel's λ, and Blomberg's K) to test for a signifcant phylogenetic signal in the point records.
+We also performed statistcal analyses (i.e., Moran's I, Abouheif's Cmean, Pagel's λ, and Blomberg's K) to test for a signifcant phylogenetic signal in the point records.
 ```
 # 1. Moran's I
 # First, you need one file that combines both the phylogenetic and trait data
