@@ -72,7 +72,7 @@ add.color.bar(cols = COLOUR, lims=c(1,22), digits=1, prompt=TRUE,title = NA,
 
 # See below for resulting plot:
 ```
-![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%203b.png)
+![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%204%20(SR).png)
 
 To produce a plot representing the density of seagrass sampling by species, we first import the dataset we created during the previous analysis.
 ```
