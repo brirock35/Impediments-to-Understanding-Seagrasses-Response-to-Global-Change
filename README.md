@@ -72,7 +72,7 @@ add.color.bar(cols = COLOUR, lims=c(1,22), digits=1, prompt=TRUE,title = NA,
 
 # See below for resulting plot:
 ```
-![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%203b.png)
+![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure4a_seagrass_sampling_density.png)
 
 To produce a plot representing the density of seagrass sampling by species, we first import the dataset we created during the previous analysis.
 ```
@@ -108,6 +108,7 @@ add.color.bar(cols = COLOUR, lims=c(1,532), digits=1, prompt=TRUE,title = NA,
 # See below for resulting plot:
 ```
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Rplot_sampling%20bias%20final.pdf)
+
 ## 2. Temporal increase in sampling
 ## 3. Temporal sampling trends 
 ## 4. Taxonomic sampling trends
