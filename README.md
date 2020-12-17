@@ -246,7 +246,7 @@ phylosig(subphy, trait, method="K", test=TRUE, nsim=999)
 
 
 ## 5. Family rank correlations
-
+![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%20MEOWs_seagrass_families3.png)
 ## 6. Extinction risk
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%203.png)
 ## 7. Quantifying increase of sampling
