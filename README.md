@@ -164,6 +164,8 @@ dev.off()
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%204.png)
 
 ## 3. Temporal sampling trends 
+![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%205.png)
+![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/MEOW_plot.png)
 ## 4. Taxonomic sampling trends
 This analysis sets out to determine the presence of a phylogenetic signal in the sampling of seagrasses. First, we read in the needed packages.
 ```
@@ -244,7 +246,11 @@ phylosig(subphy, trait, method="K", test=TRUE, nsim=999)
 
 
 ## 5. Family rank correlations
+
 ## 6. Extinction risk
+![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%203.png)
 ## 7. Quantifying increase of sampling
+![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%209.png)
+
 ## References
 ## Acknowledgments
