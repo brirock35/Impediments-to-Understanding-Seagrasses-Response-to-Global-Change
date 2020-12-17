@@ -209,8 +209,7 @@ vp2 <- open_tree(pp, 180
 # See below for resulting plot: 
 ```
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%206.png)
-
-We also performed statistcal analyses (i.e., Moran's I, Abouheif's Cmean, Pagel's λ, and Blomberg's K) to test for a signifcant phylogenetic signal in the point records.
+We also performed statistcal analyses (i.e., Moran's I, Abouheif's mean, Pagel's λ, and Blomberg's K) to test for a signifcant phylogenetic signal in point records.
 ```
 # 1. Moran's I
 # First, you need one file that combines both the phylogenetic and trait data
@@ -220,7 +219,7 @@ moran.test <- abouheif.moran(phylotraits, method="Abouheif")
 plot(moran.test)
 
 
-# 2. Abouheif's Cmean
+# 2. Abouheif's mean
 # First, you need one file that combines both the phylogenetic and trait data
 phylotraits <- phylo4d(subphy, subdat)
 abouheif.test <- abouheif.moran(phylotraits,method="oriAbouheif")
