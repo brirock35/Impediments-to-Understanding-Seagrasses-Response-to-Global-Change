@@ -110,6 +110,59 @@ add.color.bar(cols = COLOUR, lims=c(1,532), digits=1, prompt=TRUE,title = NA,
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure4a_seagrass_sampling_density.png)
 
 ## 2. Temporal increase in sampling
+The goal of this analysis is to visualize how the collection of seagrass records has changed across time. First, we begin by reading in the needed packages.
+```
+library(lubridate)
+library(circular)
+library(tidyverse)
+library(phyloregion)
+library(raster)
+library(data.table)
+library(colorRamps)
+```
+Then, we read in the datasets needed for the analysis, and perform data manipulation to isolate temporal information provided in the point records and convert these to Julian day of year format.
+```
+w <- shapefile("/Users/darulab/Desktop/BriannaR/Review/Data/MEOW/meow_dissolved.shp")
+d <- fread("/Users/darulab/Desktop/BriannaR/Review/Data/SeagrassGBIF/GBIF Seagrasses/seagrass occurrances jan_17 2020.csv")
+d <- d[, c("family", "species", "decimalLongitude", "decimalLatitude", "year", "month", "day")]
+names(d)[c(3,4)] <- c("lon", "lat")
+d <- d[complete.cases(d),]
+d <- d %>% mutate(julian = as.Date(paste(year, month, day, sep="-")))
+d <- d %>% mutate(julian = yday(as.Date(paste(year, month, day, sep = "-"))))
+d <- d[!is.na(d$julian),]
+coordinates(d) <- ~ lon+lat
+proj4string(w) <- proj4string(d)
+x <- over(d, w)
+y <- cbind(as.data.table(d), x)
+y <- y[complete.cases(y),]
+```
+We next identify month names as its own variable, then create a data frame that assigns a number to each day of the month in a given year, and finally create variables for the Julian day data and years within the data.
+```
+months <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+            "Jul", "Aug", "Sep", "Oct","Nov", "Dec")
+mos <- data.frame(month = fct_inorder(months), day=(cumsum(c(0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)[1:12])+15))
+Julian_Day <- y$julian
+Year <- y$year
+```
+Finally, we plot the point records across time based off of the year and Julian day of year assigned to that point record, and save the resulting plot as a PNG.
+```
+p <- ggplot() +
+  geom_point(data=y, aes(Julian_Day, Year, color=year), size=1) +
+  geom_text(data=mos, aes(day, 2019, label=month), size=7, angle = 45) +
+  ylim(1700, NA) +
+  theme_minimal()+
+  scale_color_gradientn(colours=rev(blue2red(10)))+
+  theme(axis.text = element_text(colour = "black", size = 20))
+
+# save as .png
+png("/Users/darulab/Desktop/temp2.png", width=8, height=12, units = "in", res=300)
+p
+dev.off()
+
+# See below for resulting plot: 
+```
+![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%204.png)
+
 ## 3. Temporal sampling trends 
 ## 4. Taxonomic sampling trends
 ## 5. Family rank correlations
