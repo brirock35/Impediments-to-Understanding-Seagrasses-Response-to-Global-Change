@@ -243,13 +243,41 @@ names(trait)<-rownames(subdat)
 #Then, we do the test with 999 randomizations:
 phylosig(subphy, trait, method="K", test=TRUE, nsim=999)
 ```
-
-
 ## 5. Family rank correlations
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%20MEOWs_seagrass_families3.png)
 ## 6. Extinction risk
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%203.png)
 ## 7. Quantifying increase of sampling
+To represent the increase in point records availiable on open source databases (i.e., GBIF) within recent decades, we first read in the needed package.
+```
+library(raster)
+```
+We then read in the downloaded dataset containing seagrass occurrence records and subset and select for the variables needed for the analysis.
+```
+y <- read.csv("/Users/BriRock/Desktop/Seagrass Research/Thesis/Project/SDMs/Data/Master_occurrances/master_occurrences.csv")
+y <- subset(y, y$year > 1600)
+x <- data.frame(table(y$year))
+names(x) <- c("Year", "nrecs")
+x$Year <- as.numeric(as.character(x$Year))
+x1 <- seq(1700, 2020) 
+index <- data.frame(setdiff(x1, x$Year))
+index$nrecs <- 0
+names(index)[1] <- "Year"
+z <- rbind(x, index)
+```
+We then plotted the occurrences over time, and saved the the output as a post script. 
+```
+plot(z$Year, log(z$nrecs), pch=21, las=1, bg=" orange",cex=2,  ylab = "Number of Occurrences", xlab = "Year")
+fit <- lm(log(z$nrecs +1)~z$Year)
+abline(fit, col ="black", lwd =2)
+
+postscript("/Users/BriRock/Desktop/temp.eps", height = 8, width = 12)
+plot(z$Year, log(z$nrecs), pch=21, las=1, bg=" orange",cex=2,  ylab = "Number of Occurrences", xlab = "Year")
+abline(fit, col ="black", lwd =2)
+dev.off()
+
+# See below for resulting plot: 
+```
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%209.png)
 
 ## References
