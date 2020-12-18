@@ -246,7 +246,51 @@ phylosig(subphy, trait, method="K", test=TRUE, nsim=999)
 ## 5. Family rank correlations
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%20MEOWs_seagrass_families3.png)
 ## 6. Extinction risk
+To address extinction risk across seagrass taxonomy, we utlized the threatened statuses set forth by the IUCN Redlist. We first read in the needed packages.
+```
+library(raster)
+library(picante)
+```
+We then imported seagrass polygons within a shapefile downloaded from the IUCN, and then identified seagrass species within the categories of "threatened" and "nontheatened". We then took the proportion of seagrass species classified as "threatened" against the total number of seagrass species present wihtin each family.
+```
+r <- shapefile("/Users/darulab/Desktop/BriannaR/Review/Data/SEAGRASSES_IUCN/SEAGRASSES.shp")
+r <- r[, c("binomial", "family", "genus", "category")]
+r <- as.data.frame(r)
+r$status <- r$category
+r$status <- as.character(r$status)
+r$status[r$status=="EN"] <- "threatened"
+r$status[r$status=="VU"] <- "threatened"
+r$status[r$status=="LC"] <- "nonthreatened"
+r$status[r$status=="NT"] <- "nonthreatened"
+r <- subset(r, !(r$status %in% "DD"))
+r <- unique(r)
+M <- as.data.frame.matrix(table(r$status, r$family))
+M <- t(M)
+z <- M/rowSums(M)
+```
+Next, we plotted the proportions of each family within a barplot and saved the output as a PDF.
+```
+pdf("/Users/darulab/Desktop/IUCN_plot.pdf", width = 12, height = 8)
+barplot(t(z), las = 1, beside=T, col=c("grey", "red"))
+dev.off()
+
+# See below for resulting plot: 
+```
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%203.png)
+Finally, we assessed the significance of the quantiles assigned to seagrass families possessing threatened seagrass species to determine which families possessed a significant proportion of threatened species by the total number of species.
+```
+for (j in 1:length(SS)) {
+  ss1 <- xx[[SS[j]]]
+  quant <- quantile(as.numeric(trimws(ss1$threatened)), probs = 0.05)
+  mm <- subset(z, z$family==SS[j])
+  if(mm$threatened>quant[[1]]){
+    mm$sig_code <- "significant"
+  } else (mm$sig_code <- "nonsignificant")
+  out <- rbind(out, mm)
+  print(j)
+}
+ww <- data.frame(out)
+```
 ## 7. Quantifying increase of sampling
 To represent the increase in point records availiable on open source databases (i.e., GBIF) within recent decades, we first read in the needed package.
 ```
