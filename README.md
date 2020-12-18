@@ -314,6 +314,104 @@ names(trait)<-rownames(subdat)
 phylosig(subphy, trait, method="K", test=TRUE, nsim=999)
 ```
 ## 5. Family rank correlations
+For this analysis, the goal was to determine the correlaton coefficients for marine ecoregions that contain segrass families that possess threatened seagrass species. First we read in the needed packages.
+```
+library(data.table)
+library(phyloregion)
+library(raster)
+library(GGally)
+library(rgeos)
+```
+We then upload the required shapefiles (i.e., MEOW polygons and ICUN seagrass polygons), then subset for the taxonomic information for each species while also identifying its' IUCN threatened status. We also establish marine ecoregions as realms.
+```
+M <- shapefile("/Users/darulab/Desktop/BriannaR/Review/Data/MEOW/meow_dissolved.shp") 
+proj4string(M) <- CRS("+proj=longlat +datum=WGS84") 
+r <- shapefile("/Users/darulab/Desktop/BriannaR/Review/Data/SEAGRASSES_IUCN/SEAGRASSES.shp")
+r <- r[, c("binomial", "family", "genus", "category")]
+rr <- subset(r, r$category %in% c("EN", "VU")) 
+n <- polys2comm(r, res=1, species = "binomial")
+s <- n$poly_shp
+gs <- gCentroid(s, byid=TRUE)
+s1 <- data.frame(s, data.frame(gs))
+names(s1)[c(3,4)] <- c("lon", "lat")
+s1 <- subset(s1, s1$lon > -180)
+coordinates(s1) <- ~lon+lat
+proj4string(s1) <- proj4string(M)
+S <- unique(M$REALM)
+xx <- over(s1, M, returnList = TRUE)
+x <- cbind(as.data.frame(s1), xx)
+out <- NULL
+for (i in seq_along(S)){
+  m <- subset(M, M$REALM %in% S[i])
+  res <- over(s1, m)
+  x <- cbind(as.data.frame(s1), res)
+  x <- x[complete.cases(x),]
+  out <- rbind(out, x)
+  print(i)
+}
+z <- data.frame(out)
+```
+Next, we created community data from the IUCN shapefile, and combined these data with presence of seagrass families across realms (i.e., marine ecoregions). Then, we determined the proportion of threatened seagrasses by total species within each family, ranked the families based on their threatened statuses and their dispersal across MEOWs.
+```
+dd <- n$comm_dat
+ind1 <- match(dd$grids, z$grids)
+d <- cbind(dd, z[ind1, c("REALM", "lon", "lat")])
+ind2 <- match(d$species, r$binomial)
+d <- cbind(d, family=r$family[ind2])
+d <- d[complete.cases(d),]  
+xx1 <- data.frame(table(d$family))
+names(xx1) <- c("family", "global_MAIN")
+ind3 <- intersect(d$species, rr$binomial)
+IUCN <- subset(d, d$species %in% ind3) 
+S <- unique(d$REALM)
+
+out <- list()
+for (i in seq_along(S)) {
+  # natives (all species)
+  nat <- subset(d, d$REALM %in% S[i])
+  nat <- data.frame(table(nat$family))
+  names(nat) <- c("family", "natives")
+  
+  # threatened species
+  thr <- subset(IUCN, IUCN$REALM %in% S[i])
+  thr <- data.frame(table(thr$family))
+  names(thr) <- c("family", "threatened")
+  
+  r <- Reduce(function(x, y) merge(x, y, by="family", all=TRUE), list(nat, thr, xx1))
+  r <- r[complete.cases(r),]
+  
+  # Proportion of threatened species by total species within families
+  r$prop_threatened <- r$threatened/r$natives
+  head(r)
+  
+  # RANKING the families
+  r$Rank <-  rank(r$prop_threatened, ties.method = "first") 
+  r <- r[, c("family", "Rank")]
+  
+  names(r)[match("Rank", names(r))] <- S[i]
+  out[[i]] <- r
+  
+  print(S[i])
+  
+}
+```
+Finally, we plot the corrleational values and save the output as a postscript.
+```
+RR <- Reduce(function(x, y) merge(x, y, by="family", all=TRUE), out)
+postscript("/Users/darulab/Desktop/Figure_MEOWs_seagrass_families.ps", width = 16, height = 14)
+ggpairs(RR[, c(2:8)],
+        diag = "blank",
+        lower = list(continuous = wrap("smooth_lm", pch=21, bg="blue", size=2)),
+        upper = list(continuous = wrap("cor", color="black", size=5))) +
+  theme(legend.position = "none",
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_rect(fill = NA),
+        text = element_text(size=9))
+dev.off()
+
+# See below for resulting plot: 
+```
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%20MEOWs_seagrass_families3.png)
 ## 6. Extinction risk
 To address extinction risk across seagrass taxonomy, we utlized the threatened statuses set forth by the IUCN Redlist. We first read in the needed packages.
