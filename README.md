@@ -164,19 +164,67 @@ dev.off()
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%204.png)
 
 ## 3. Temporal sampling trends 
+The goal of this analysis is to investigate the temporal trends of seagrass sampling over the course of a given year within individual marine ecoregions of the world (MEOWs). First, we download the needed packages.
+```
+library(lubridate)
+library(circular)
+library(tidyverse)
+library(phyloregion)
+library(raster)
+library(data.table)
+```
+We then read in a shapefile of all MEOWs as well as the downloaded dataset possessing seagrass occurrence records. We then adapt the temporal data from these records into Julian day of year format, and then layer the shapefile over the point record data.
+```
+w <- shapefile("/Users/darulab/Desktop/BriannaR/Review/Data/MEOW/meow_dissolved.shp")
+d <- fread("/Users/darulab/Desktop/BriannaR/Review/Data/SeagrassGBIF/GBIF Seagrasses/seagrass occurrances jan_17 2020.csv")
+d <- d[, c("family", "species", "decimalLongitude", "decimalLatitude", "year", "month", "day")]
+names(d)[c(3,4)] <- c("lon", "lat")
+d <- d[complete.cases(d),]
+d <- d %>% mutate(julian = as.Date(paste(year, month, day, sep="-")))
+d <- d %>% mutate(julian = yday(as.Date(paste(year, month, day, sep = "-"))))
+d <- d[!is.na(d$julian),]
+coordinates(d) <- ~ lon+lat
+proj4string(w) <- proj4string(d)
+x <- over(d, w)
+y <- cbind(as.data.table(d), x)
+y <- y[complete.cases(y),]
+```
+We then plot the density of sampling across MEOWs over the course of all years included in the dataset (i.e, 1770-present) with the data spread out over a circular plot possessing all 12 months of the year. This is saved as a PDF with a circular plot representing temporal sampling density for each MEOW.
+```
+pdf("/Users/darulab/Desktop/Figure_temporal.pdf", width = 12, 8)
+par(mfrow=c(3,4))      
+par(xpd=NA, mar=c(5, 4, 4, 2) + 0.1 + c(1,0,2,0))
+for (i in seq_along(S)) {
+  f1 <- subset(y, y$REALM %in% S[i])
+  t1 <- as.circular(f1$julian, units = "degrees")
+  t2 <- density(t1, bw=12, adjust = 3)
+  pdf(file = paste0("/Users/darulab/Desktop/", S[i], ".pdf"), width = 8, height = 8) ## Remember t hash out for multipanel fig
+  par(xpd=NA, mar=c(5, 4, 4, 2) + 0.1 + c(1,0,2,0)) ### To hash out
+  plot(c2, col="grey", main=S[i], ylab="", xlab="", zero.line=F, rotation="clock", lwd=2)
+  lines(t2, col="blue", lwd=2, rotation = "clock")
+  segments(x0=0, y0=0, x1=cos(seq(from=0, to=2*pi, length.out=12+1)) * 1.5, y1=sin(seq(from=0, to=2*pi, length.out=12+1)) * 1.5, col="grey", lty = 2)
+  # months
+  text(cos(seq(from=2*pi-pi/12, to=0-pi/12, length.out=12+1)+pi/2) * 1.5, sin(seq(from=2*pi-pi/12, to=0-pi/12, length.out=12+1)+pi/2) * 1.5, labels=c("Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", NA), col="black")
+  dev.off() 
+  
+  print(S[i])
+}
+
+# See below for resulting plot: 
+```
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%205.png)
-Finally, we created a plot representing all the marine ecoregions of the world (MEOWs) in geographic space to provide a reference to each of the temporal sampling trends for each ecoregion.
+Finally, we created a plot representing all the MEOWs in geographic space to provide a reference to each of the temporal sampling trends for each ecoregion.
 ```
 pj <- "+proj=longlat"
 npj <- "+proj=eqearth"
 w <- wrld_simpl
 s <- shapefile("/Users/darulab/Desktop/BriannaR/Review/Data/MEOW/meow_dissolved.shp")
 bb <- shapefile("/Users/darulab/Desktop/BriannaR/Review/Data/ne_110m_wgs84_bounding_box/ne_110m_wgs84_bounding_box.shp")
-proj4string(w) <- CRS(pj) # assign a new CRS
+proj4string(w) <- CRS(pj) 
 w <- spTransform(w, CRS(npj))
-proj4string(s) <- CRS(pj) # assign a new CRS
+proj4string(s) <- CRS(pj) 
 s <- spTransform(s, CRS(npj))
-proj4string(bb) <- CRS(pj) # assign a new CRS
+proj4string(bb) <- CRS(pj) 
 bb <- spTransform(bb, CRS(npj))
 COLRS <- phyloregion:::hue(12)
 pdf("/Users/darulab/Desktop/MEOW_plot.pdf", width = 12, height = 8)
