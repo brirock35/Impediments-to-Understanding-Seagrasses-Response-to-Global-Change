@@ -165,6 +165,28 @@ dev.off()
 
 ## 3. Temporal sampling trends 
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%205.png)
+Finally, we created a plot representing all the marine ecoregions of the world (MEOWs) in geographic space to provide a reference to each of the temporal sampling trends for each ecoregion.
+```
+pj <- "+proj=longlat"
+npj <- "+proj=eqearth"
+w <- wrld_simpl
+s <- shapefile("/Users/darulab/Desktop/BriannaR/Review/Data/MEOW/meow_dissolved.shp")
+bb <- shapefile("/Users/darulab/Desktop/BriannaR/Review/Data/ne_110m_wgs84_bounding_box/ne_110m_wgs84_bounding_box.shp")
+proj4string(w) <- CRS(pj) # assign a new CRS
+w <- spTransform(w, CRS(npj))
+proj4string(s) <- CRS(pj) # assign a new CRS
+s <- spTransform(s, CRS(npj))
+proj4string(bb) <- CRS(pj) # assign a new CRS
+bb <- spTransform(bb, CRS(npj))
+COLRS <- phyloregion:::hue(12)
+pdf("/Users/darulab/Desktop/MEOW_plot.pdf", width = 12, height = 8)
+plot(bb, col="#ECECEC", border="grey")
+plot(w, add=TRUE, col="white", border="#ECECEC")
+plot(s, col=COLRS, border= "grey", add=TRUE)
+dev.off()
+
+# See below for resulting plot: 
+```
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/MEOW_plot.png)
 ## 4. Taxonomic sampling trends
 This analysis sets out to determine the presence of a phylogenetic signal in the sampling of seagrasses. First, we read in the needed packages.
