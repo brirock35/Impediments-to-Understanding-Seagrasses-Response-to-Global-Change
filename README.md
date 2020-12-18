@@ -477,7 +477,7 @@ index$nrecs <- 0
 names(index)[1] <- "Year"
 z <- rbind(x, index)
 ```
-We then plotted the occurrences over time, and saved the the output as a post script. 
+We then plotted the occurrences over time, and saved the the output as a postscript. 
 ```
 plot(z$Year, log(z$nrecs), pch=21, las=1, bg=" orange",cex=2,  ylab = "Number of Occurrences", xlab = "Year")
 fit <- lm(log(z$nrecs +1)~z$Year)
