@@ -4,6 +4,10 @@
 
 ![alt text](https://barnabasdaru.files.wordpress.com/2018/05/title-picture.png?w=300&h=300g)
 
+This vignette provides the worked examples, data and R codes describing all the steps for the analyses in the paper:
+
+Rock, B.M. & Daru, B.H. Impediments to understanding seagrasses response to global change. **_Frontiers in Marine Science_** (Under review).
+
 ## 1. Spatial sampling trends
 
 First, download the needed packages. 
