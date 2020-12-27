@@ -495,3 +495,6 @@ dev.off()
 # See below for resulting plot: 
 ```
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%209.png)
+
+## Acknowledgements
+We thank Texas A&M University-Corpus Christi for logistic and financial support, as well the US National Science Foundation for funding from grant no. 2031928.
