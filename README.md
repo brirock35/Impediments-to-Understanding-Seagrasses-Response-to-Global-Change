@@ -495,6 +495,3 @@ dev.off()
 # See below for resulting plot: 
 ```
 ![alt text](https://github.com/brirock35/Impediments-to-Understanding-Seagrasses-Response-to-Global-Change/blob/main/Figure%209.png)
-
-## References
-## Acknowledgments
